@@ -33,21 +33,32 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
     next();
   });
 const generateSendJWT= (user,statusCode,res)=>{
-    // 產生 JWT token
-    const token = jwt.sign({id:user._id},process.env.JWT_SECRET,{
-      expiresIn: process.env.JWT_EXPIRES_DAY
-    });
-    user.password = undefined;
-    res.status(statusCode).json({
-      status: 'success',
-      user:{
-        token,
-        name: user.name
-      }
-    });
-  }
+  // 產生 JWT token
+  const token = jwt.sign({id:user._id},process.env.JWT_SECRET,{
+    expiresIn: process.env.JWT_EXPIRES_DAY
+  });
+  user.password = undefined;
+  res.status(statusCode).json({
+    status: 'success',
+    user:{
+      token,
+      name: user.name
+    }
+  });
+}
+
+const generateUrlJWT= (user,res) => {
+  // 產生 JWT token
+  const token = jwt.sign({id:user._id},process.env.JWT_SECRET,{
+    expiresIn: process.env.JWT_EXPIRES_DAY
+  });
+
+  // 重新導向到前端
+  res.redirect(`/callback?token=${token}&name=${user.name}`)
+}
 
 module.exports = {
-    isAuth,
-    generateSendJWT
+  isAuth,
+  generateSendJWT,
+  generateUrlJWT
 }

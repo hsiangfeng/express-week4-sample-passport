@@ -7,8 +7,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const postRouter = require('./routes/posts');
 const uploadRouter = require('./routes/upload');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+
+require('./connections/mongoose');
+require('./connections/passport');
+
 var app = express();
 // 程式出現重大錯誤時
 process.on('uncaughtException', err => {
@@ -17,15 +19,7 @@ process.on('uncaughtException', err => {
 	console.error(err);
 	process.exit(1);
 });
-dotenv.config({ path: './config.env' });
-const DB = process.env.DATABASE.replace(
-    '<password>',
-    process.env.DATABASE_PASSWORD
-  );
-  
-mongoose
-.connect(DB)
-.then(() => console.log('資料庫連接成功'));
+
 app.use(cors())
 app.use(logger('dev'));
 app.use(express.json());

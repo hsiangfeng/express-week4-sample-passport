@@ -6,8 +6,10 @@ const handleErrorAsync = require('../service/handleErrorAsync');
 const validator = require('validator');
 const User = require('../models/usersModel');
 const Post = require('../models/postsModel');
-const {isAuth,generateSendJWT} = require('../service/auth');
+const { isAuth, generateSendJWT, generateUrlJWT } = require('../service/auth');
 const router = express.Router();
+
+const passport = require('passport');
 
 router.post('/sign_up', handleErrorAsync(async(req, res, next) =>{
   let { email, password,confirmPassword,name } = req.body;
@@ -86,4 +88,13 @@ router.get('/getLikeList',isAuth, handleErrorAsync(async(req, res, next) =>{
     likeList
   });
 }))
+
+router.get('/google', passport.authenticate('google', {
+  scope: [ 'email', 'profile' ],
+}));
+
+router.get('/google/callback', passport.authenticate('google', { session: false }), (req, res) => {
+  generateUrlJWT(req.user, res);
+})
+
 module.exports = router;
